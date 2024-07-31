@@ -120,47 +120,22 @@ impl Writer {
         }
     }
 }
-use spin::Mutex;
-use lazy_static::lazy_static;
 
-lazy_static! {
-    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    });
-}
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
-}
-
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
-}
-
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
+pub fn print_something() {
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
-}
-// pub fn print_something() {
-//     use core::fmt::Write;
-//     let mut writer = Writer {
-//         column_position: 0,
-//         color_code: ColorCode::new(Color::Pink, Color::DarkGray),
-//         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-//     };
+    let mut writer = Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Pink, Color::DarkGray),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    };
 
-//     writer.write_byte(b'H');
-//     writer.write_string("e11o ");
-//     writer.write_string("World!");
-//     writer.write_string("VGA text mode added successfully");
-//     writer.write_byte(b'\n');
-//     write!(writer, "--Gu{}rdI{}N", 4,4).unwrap();
-// }
+    writer.write_byte(b'H');
+    writer.write_string("e11o ");
+    writer.write_string("World!");
+    writer.write_string("VGA text mode added successfully");
+    writer.write_byte(b'\n');
+    write!(writer, "--Gu{}rdI{}N", 4,4).unwrap();
+}
 // use core::panic::PanicInfo;
 // pub fn panic_print(panic_info: &PanicInfo){
 //     use core::fmt::Write;
