@@ -13,10 +13,21 @@ pub extern "C" fn _start() -> ! {
     println!();
     println!("This is my OS created in Rust\n");
     println!("--Gu4rdI4N");
+    blog_os::init(); 
+    fn stack_overflow() {
+        stack_overflow(); // for each recursion, the return address is pushed
+    }
+
+    // trigger a stack overflow
+    stack_overflow();
+    unsafe {
+        *(0xcafebabe as *mut u8) = 41;
+    };
+    x86_64::instructions::interrupts::int3(); // new
 
     #[cfg(test)]
     test_main();
-
+    println!("It did not crash!");
     loop {}
 }
 
