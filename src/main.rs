@@ -17,8 +17,19 @@ pub extern "C" fn _start() -> ! {
     // fn stack_overflow() {
     //     stack_overflow();
     // }
+    use x86_64::registers::control::Cr3;
 
-    
+    let (level_4_page_table, _) = Cr3::read();
+    println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+
+    // let p=0xcafebabe as *mut u8;
+    // unsafe{*p=42;}
+    let r =0x204294 as *mut u8;
+    // unsafe{*r=12;} this will give an error since its a code page and can only be read
+    println!("so we can read from there!!");
+    let p=0x204294 as *mut u8;
+    unsafe{*p=42;}
+
     // stack_overflow();   
     // unsafe {
     //     *(0xcafebabe as *mut u8) = 41;
@@ -31,6 +42,11 @@ pub extern "C" fn _start() -> ! {
     blog_os::hlt_loop();
 }
 
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    blog_os::test_panic_handler(info)
+}
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -39,8 +55,3 @@ fn panic(info: &PanicInfo) -> ! {
     blog_os::hlt_loop();
 }
 
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    blog_os::test_panic_handler(info)
-}
