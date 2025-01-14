@@ -4,7 +4,7 @@ use linked_list_allocator::LockedHeap;
 
 pub mod bump;
 pub mod linked_list;
-
+pub mod fixed_size_block;
 // #[global_allocator]
 // static ALLOCATOR: LockedHeap = LockedHeap::empty();
 use bump::bump_allocator;
@@ -14,9 +14,15 @@ use bump::bump_allocator;
 
 use linked_list::LinkedListAllocator;
 
+// #[global_allocator]
+// static ALLOCATOR: Locked<LinkedListAllocator> =
+//     Locked::new(LinkedListAllocator::new());
+
+use fixed_size_block::FixedAlloc;
+
 #[global_allocator]
-static ALLOCATOR: Locked<LinkedListAllocator> =
-    Locked::new(LinkedListAllocator::new());
+static ALLOCATOR: Locked<FixedAlloc> = Locked::new(
+    FixedAlloc::new());
 pub const HEAP_START: usize = 0x_4444_CAFE_BABE;
 pub const HEAP_SIZE: usize = 100 * 1024; 
 
